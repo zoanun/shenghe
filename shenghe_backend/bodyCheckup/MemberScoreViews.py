@@ -30,7 +30,7 @@ def find(request):
         age = request.GET['age']
         sex = request.GET['sex']
         name = request.GET['name']
-        result = NonMember.objects.all()
+        result = Member.objects.all()
         if memeberId:
             result = result.filter(memeberId=memeberId)
         if age:
@@ -40,8 +40,26 @@ def find(request):
         if name:
             result = result.filter(name__contains=name)
         result = result.order_by('-id')
-        result = result.values('id', 'referee', 'channel', 'age', 'sex', 'name')
+        result = result.values('id', 'memberId', 'age', 'sex', 'name')
         return HttpResponse(json.dumps(list(result), ensure_ascii=False))
+    else:
+        raise BaseException('不支持POST方法')
+
+
+def score(request):
+    if request.method == 'GET':
+        id = request.GET['id']
+        sex = request.GET['sex']
+        age = request.GET['age']
+        searchDict = {
+            'member_id': id,
+            'item__itemdetail__age': age,
+            'item__itemdetail__sex': sex
+        }
+        result = MemberItemScore.objects.filter(**searchDict)
+        result = result.values('id', 'item__name', 'item__itemdetail__value', 'score')
+        result = list(map(lambda r: {'id': r['id'], 'name': r['item__name'], 'value': r['item__itemdetail__value'], 'score': r['score']}, result))
+        return HttpResponse(json.dumps(result, ensure_ascii=False))
     else:
         raise BaseException('不支持POST方法')
 
@@ -58,6 +76,7 @@ def insert(request):
         member.memberId = data['memberId']
         member.age = data['age']
         member.sex = data['sex']
+        member.name = data['name'] if 'name' in data else ''
         member.save()
 
         for item in items:
@@ -73,26 +92,26 @@ def insert(request):
         raise BaseException('不支持GET方法')
 
 
-def score(request):
-    if request.method == 'GET':
-        id = request.GET['id']
-        result = MemberItemScore.objects.filter(member__id=id)
-        result = result.values('id', 'item__name', 'item__itemdetail__value', 'score')
-        return HttpResponse(json.dumps(list(result), ensure_ascii=False))
-    else:
-        raise BaseException('不支持POST方法')
-
-
 def update(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        item = ItemMaster.objects.get(pk=data['id'])
-        item.type = data['type']
-        item.name = data['name']
-        item.nonmemberUseYn = data['nonmemberUseYn']
-        item.memberUseYn = data['memberUseYn']
-        item.useYn = data['useYn']
-        item.save()
+
+        items = data['items']
+        if len(items) == 0:
+            return HttpResponse("FAIL")
+
+        member = Member.objects.get(pk=data['id'])
+        member.age = data['age']
+        member.sex = data['sex']
+        member.name = data['name']
+        member.save()
+
+        for item in items:
+            if item['score']:
+                score = MemberItemScore.objects.get(pk=item['id'])
+                score.score = item['score']
+                score.save()
+
         return HttpResponse("SUCCESS")
     else:
         raise BaseException('不支持GET方法')
@@ -101,9 +120,9 @@ def update(request):
 def delete(request):
     if request.method == 'POST':
         id = json.loads(request.body)['id']
-        item = NonMember.objects.get(pk=id)
+        item = Member.objects.get(pk=id)
         item.delete()
-        score = NonMemberItemScore.objects.filter(member__id=id)
+        score = MemberItemScore.objects.filter(member__id=id)
         score.delete()
         return HttpResponse("SUCCESS")
     else:

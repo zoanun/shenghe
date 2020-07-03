@@ -1,0 +1,5 @@
+shenghe_backend/.idea/
+shenghe_backend/bodyCheckup/__pycache__/
+shenghe_backend/bodyCheckup/migrations/
+shenghe_backend/shenghe/__pycache__/
+shenghe_frontend/package-lock.json

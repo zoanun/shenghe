@@ -94,6 +94,13 @@
               label="名字"
               align="center">
             </el-table-column>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <el-button type="text"
+                          icon="el-icon-delete"
+                          @click="deleteMember(scope.$index, scope.row)">删除</el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </el-col>
         <el-col :span="14">
@@ -241,6 +248,9 @@ export default {
         method: 'get',
         params: this.query
       }).then(data => {
+        this.form = {
+            items: []
+          };
         this.tableData = data.map(item => {
           return { ...item, isSelected: false }
         });
@@ -260,12 +270,15 @@ export default {
     },
     doSave () {
       let url = '/bc/nonmember/insert';
+      if(this.form.id === 0 || this.form.id ){
+        url = '/bc/nonmember/update';
+      }
       return request({
         url: this.contextPath + url,
         method: 'post',
         data: this.form
       }).then(data => {
-        this.$message.success('增加成功!');
+        this.$message.success('操作成功!');
         this.findClick();
       }).catch(e => {
         this.$message.error('发生错误，请联系管理员.');
@@ -276,31 +289,53 @@ export default {
       this.$refs.refReferrr.focus();
     },
     handleItemChange (row) {
-      this.form = {
-        title: '查看信息',
-        id: row.id,
-        referee: row.referee,
-        channel: row.channel,
-        age: row.age,
-        sex: row.sex,
-        name: row.name,
-        items: []
-      };
+      if(!row) return;
       this.initItem();
       let url = '/bc/nonmember/score'
       request({
         url: this.contextPath + url,
         method: 'get',
-        params: this.form
+        params: {
+          id: row.id,
+          referee: row.referee,
+          channel: row.channel,
+          age: row.age,
+          sex: row.sex,
+          name: row.name
+        }
       }).then(data => {
-        data.forEach((d, i) => {
-          this.$set(this.form.items, i, d);
+        let items = [];
+        data.forEach(d => {
+          items.push(d);
         });
+        this.form = {
+          title: '查看信息',
+          id: row.id,
+          referee: row.referee,
+          channel: row.channel,
+          age: row.age,
+          sex: row.sex,
+          name: row.name,
+          items: items
+        };
       });
       this.$refs.refReferrr.focus();
     },
     showResult () {
 
+    },
+    deleteMember(idx, row){
+      let url = '/bc/nonmember/delete';
+      return request({
+        url: this.contextPath + url,
+        method: 'post',
+        data: {id: row.id}
+      }).then(data => {
+        this.$message.success('操作成功!');
+        this.findClick();
+      }).catch(e => {
+        this.$message.error('发生错误，请联系管理员.');
+      });
     },
     listToTextFormatter (list, val) {
       let data = list.find((value, index, arr) => {

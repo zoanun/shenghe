@@ -32,11 +32,14 @@ urlpatterns = [
     path('nonmember/insert', NonmemberScoreViews.insert, name='insertNonmember'),
     path('nonmember/update', NonmemberScoreViews.update, name='updateNonmember'),
     path('nonmember/score', NonmemberScoreViews.score, name='selectScore'),
+    path('nonmember/delete', NonmemberScoreViews.delete, name='deleteMember'),
 
     # memberScoreView
     path('member/master', MemberScoreViews.findMaster, name='itemMaster'),
     path('member', MemberScoreViews.find, name='index'),
     path('member/insert', MemberScoreViews.insert, name='insertMember'),
     path('member/update', MemberScoreViews.update, name='updateMember'),
+    path('member/score', MemberScoreViews.score, name='selectScore'),
+    path('member/delete', MemberScoreViews.delete, name='deleteMember'),
 
 ]

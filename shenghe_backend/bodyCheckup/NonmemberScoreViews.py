@@ -82,7 +82,7 @@ def insert(request):
         nonmember.age = data['age']
         nonmember.sex = data['sex']
         nonmember.save()
-        print(nonmember.id)
+
         for item in items:
             if item['score']:
                 score = NonMemberItemScore()
@@ -99,13 +99,25 @@ def insert(request):
 def update(request):
     if request.method == 'POST':
         data = json.loads(request.body)
+
+        items = data['items']
+        if len(items) == 0:
+            return HttpResponse("FAIL")
+
         member = NonMember.objects.get(pk=data['id'])
-        item.type = data['type']
-        item.name = data['name']
-        item.nonmemberUseYn = data['nonmemberUseYn']
-        item.memberUseYn = data['memberUseYn']
-        item.useYn = data['useYn']
-        item.save()
+        member.age = data['age']
+        member.sex = data['sex']
+        member.name = data['name']
+        member.referee = data['referee']
+        member.channel = data['channel']
+        member.save()
+
+        for item in items:
+            if item['score']:
+                score = NonMemberItemScore.objects.get(pk=item['id'])
+                score.score = item['score']
+                score.save()
+
         return HttpResponse("SUCCESS")
     else:
         raise BaseException('不支持GET方法')

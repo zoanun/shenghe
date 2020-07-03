@@ -305,7 +305,6 @@ export default {
         data: this.form
       }).then(data => {
         this.$message.success('保存成功!');
-        this.findMasterItems();
       }).catch(e => {
         this.$message.error('发生错误，请联系管理员.');
       });
