@@ -253,7 +253,7 @@ export default {
         items: []
       };
       this.viewReport = false;
-      this.$refs.refReferrr.focus();
+      this.$refs.refReferee.focus();
     },
     findClick () {
       request({
@@ -267,6 +267,7 @@ export default {
         this.tableData = data.map(item => {
           return { ...item, isSelected: false }
         });
+        this.viewReport = false;
       }).catch(e => {
         this.$message.error('发生错误，请联系管理员.');
       })
@@ -333,7 +334,7 @@ export default {
         };
       });
       this.viewReport = true;
-      this.$refs.refReferrr.focus();
+      this.$refs.refReferee.focus();
     },
     showResult () {
       let url = '/bc/report'

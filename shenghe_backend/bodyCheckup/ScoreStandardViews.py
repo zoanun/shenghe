@@ -78,20 +78,46 @@ def report(request):
             return HttpResponse("FAIL")
 
         sql = '''
-            select *
-            from bodyCheckup_itemdetail bid
-            where bid.age = %s and bid.sex = %s
-            and bid.item_id = %s
+            select 
+                bim.name as item_name,
+                bid.age,
+                bid.sex,
+                bid.value as standardValue,
+                biss.periodType
+                biss.lowScore,
+                biss.highScore,
+                biss.scoreDesc,
+                biss.color
+            from
+                bodyCheckup_itemmaster bim,
+                bodyCheckup_itemdetail bid,
+                bodyCheckup_itemscorestandard biss
+            where bid.id = biss.itemDetail_id
+                and bim.id = bid.item_id
+                and %s between biss.lowScore and biss.highScore
+                and bid.age = %s 
+                and bid.sex = %s
+                and bid.item_id = %s
+                and date('now') between bid.staDate and bid.endDate
         '''
-        searchDict = {
-            'age': data['age'],
-            'sex': data['sex']
-        }
+        age = data['age']
+        sex = data['sex']
+        result = []
         for item in items:
             if item['score']:
-                searchDict['item_id'] = item['id']
-
-
-        return HttpResponse("SUCCESS")
+                itemId = item['itemId']
+                for row in ItemMaster.objects.raw(sql, [age, sex, itemId]):
+                    result.append({
+                        'name': row.name,
+                        'age': row.age,
+                        'sex': row.sex,
+                        'standardValue': row.standardValue,
+                        'periodType': row.periodType,
+                        'lowScore': row.lowScore,
+                        'highScore': row.highScore,
+                        'scoreDesc': row.scoreDesc,
+                        'color': row.color
+                    })
+        return HttpResponse(json.dumps(result, ensure_ascii=False))
     else:
         raise BaseException('不支持GET方法')
