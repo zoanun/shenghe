@@ -80,7 +80,7 @@ def insert(request):
         member.save()
 
         for item in items:
-            if data['score']:
+            if 'score' in item:
                 score = MemberItemScore()
                 score.item = ItemMaster.objects.get(pk=item['id'])
                 score.member = member
@@ -107,10 +107,12 @@ def update(request):
         member.save()
 
         for item in items:
+            score = MemberItemScore.objects.get(pk=item['id'])
             if item['score']:
-                score = MemberItemScore.objects.get(pk=item['id'])
                 score.score = item['score']
                 score.save()
+            else:
+                score.delete()
 
         return HttpResponse("SUCCESS")
     else:

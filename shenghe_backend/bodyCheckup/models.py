@@ -38,7 +38,7 @@ class ItemScoreStandard(BaseModel):
     每个项目的打分标准
     """
     id = models.AutoField(primary_key=True)
-    item = models.ForeignKey(ItemDetail, on_delete=models.CASCADE, verbose_name="项目")
+    itemDetail = models.ForeignKey(ItemDetail, on_delete=models.CASCADE, verbose_name="项目")
     typeChoices = (
         ('SUPERLOWER', '超低'),
         ('LOWER', '偏低'),

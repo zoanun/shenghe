@@ -4,6 +4,11 @@ import json
 
 
 def findMaster(request):
+    '''
+    找到右边需要填写的项目
+    :param request:
+    :return:
+    '''
     if request.method == 'GET':
         age = request.GET['age']
         sex = request.GET['sex']
@@ -25,6 +30,11 @@ def findMaster(request):
 
 
 def find(request):
+    '''
+    找到左边的已经测试过的人员名单
+    :param request:
+    :return:
+    '''
     if request.method == 'GET':
         referee = request.GET['referee']
         channel = request.GET['channel']
@@ -50,6 +60,11 @@ def find(request):
 
 
 def score(request):
+    '''
+    得到右边对应的得分
+    :param request:
+    :return:
+    '''
     if request.method == 'GET':
         id = request.GET['id']
         sex = request.GET['sex']
@@ -60,8 +75,8 @@ def score(request):
             'item__itemdetail__sex': sex
         }
         result = NonMemberItemScore.objects.filter(**searchDict)
-        result = result.values('id', 'item__name', 'item__itemdetail__value', 'score')
-        result = list(map(lambda r: {'id': r['id'], 'name': r['item__name'], 'value': r['item__itemdetail__value'], 'score': r['score']}, result))
+        result = result.values('id', 'item__id', 'item__name', 'item__itemdetail__value', 'score')
+        result = list(map(lambda r: {'id': r['id'], 'itemId': r['item__id'], 'name': r['item__name'], 'value': r['item__itemdetail__value'], 'score': r['score']}, result))
         return HttpResponse(json.dumps(result, ensure_ascii=False))
     else:
         raise BaseException('不支持POST方法')
@@ -84,7 +99,7 @@ def insert(request):
         nonmember.save()
 
         for item in items:
-            if item['score']:
+            if 'score' in item:
                 score = NonMemberItemScore()
                 score.item = ItemMaster.objects.get(pk=item['id'])
                 score.member = nonmember
@@ -113,10 +128,12 @@ def update(request):
         member.save()
 
         for item in items:
+            score = NonMemberItemScore.objects.get(pk=item['id'])
             if item['score']:
-                score = NonMemberItemScore.objects.get(pk=item['id'])
                 score.score = item['score']
                 score.save()
+            else:
+                score.delete()
 
         return HttpResponse("SUCCESS")
     else:

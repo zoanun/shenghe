@@ -112,10 +112,15 @@
                       </el-form-item>
                     </el-col>
                   </el-row>
+
                 </div>
               </el-form>
-              <el-button @click="saveClick"
-                type="primary">保存</el-button>
+              <el-row>
+                <el-col style="text-align:center">
+                  <el-button @click="saveClick"
+                    type="primary">保存</el-button>
+                </el-col>
+              </el-row>
             </div>
           </el-card>
         </el-col>
@@ -241,7 +246,7 @@ export default {
       request({
         url: this.contextPath + '/bc/scorestandard',
         method: 'get',
-        params: { itemId: id }
+        params: { itemDetailId: id }
       }).then(data => {
         let oldForm = this.form;
         this.form = {          itemId: id, data: {
@@ -297,7 +302,7 @@ export default {
 
     },
     saveClick () {
-      this.form.itemId = this.currentMasterItem.id;
+      this.form.itemDetailId = this.currentMasterItem.id;
       let url = '/bc/scorestandard/insert';
       return request({
         url: this.contextPath + url,

@@ -97,8 +97,8 @@
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button type="text"
-                          icon="el-icon-delete"
-                          @click="deleteMember(scope.$index, scope.row)">删除</el-button>
+                  icon="el-icon-delete"
+                  @click="deleteMember(scope.$index, scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -112,7 +112,7 @@
               label-width="180px">
               <el-form-item label="推荐人">
                 <el-input v-model="form.referee"
-                  ref="refReferrr"
+                  ref="refReferee"
                   placeholder="推荐人"
                   class="handle-input mr10"></el-input>
               </el-form-item>
@@ -166,13 +166,19 @@
               <el-button type="primary"
                 @click="saveClick">保存</el-button>
               <el-button type="primary"
-                @click="showResult">查看结果报表</el-button>
+                @click="showResult"
+                :disabled="!viewReport">查看结果报表</el-button>
             </div>
           </div>
         </el-col>
       </el-row>
 
     </div>
+    <el-dialog title="体测报告"
+      :visible.sync="reportVisible"
+      width="400px">
+      {{ reportData }}
+    </el-dialog>
   </div>
 </template>
 
@@ -201,11 +207,17 @@ export default {
       },
       form: { title: '新增信息', items: [] },
       tableData: [],
-      rules: {        age: [
+      viewReport: false,
+      reportVisible: false,
+      reportData: [],
+      rules: {
+        age: [
           { required: true, message: '请输入年龄', trigger: 'blur' }
-        ], sex: [
+        ],
+        sex: [
           { required: true, message: '请输入性别', trigger: 'blur' }
-        ]      },
+        ]
+      },
       contextPath: localStorage.getItem('backendContextPath')
     };
   },
@@ -226,7 +238,7 @@ export default {
     },
     initItem () {
       if (this.form.age && this.form.sex) {
-        request({
+        return request({
           url: this.contextPath + '/bc/nonmember/master',
           method: 'get',
           params: this.form
@@ -240,6 +252,7 @@ export default {
         title: '新增信息',
         items: []
       };
+      this.viewReport = false;
       this.$refs.refReferrr.focus();
     },
     findClick () {
@@ -249,8 +262,8 @@ export default {
         params: this.query
       }).then(data => {
         this.form = {
-            items: []
-          };
+          items: []
+        };
         this.tableData = data.map(item => {
           return { ...item, isSelected: false }
         });
@@ -270,7 +283,7 @@ export default {
     },
     doSave () {
       let url = '/bc/nonmember/insert';
-      if(this.form.id === 0 || this.form.id ){
+      if (this.form.id === 0 || this.form.id) {
         url = '/bc/nonmember/update';
       }
       return request({
@@ -285,12 +298,12 @@ export default {
       });
     },
     reset () {
-      this.form = { items: [] };
-      this.$refs.refReferrr.focus();
+      this.form.items = [];
+      this.initItem();
+      this.$refs.refReferee.focus();
     },
     handleItemChange (row) {
-      if(!row) return;
-      this.initItem();
+      if (!row) return;
       let url = '/bc/nonmember/score'
       request({
         url: this.contextPath + url,
@@ -319,17 +332,27 @@ export default {
           items: items
         };
       });
+      this.viewReport = true;
       this.$refs.refReferrr.focus();
     },
     showResult () {
-
+      let url = '/bc/report'
+      this.doSave().then(() => {
+        request({
+          url: this.contextPath + url,
+          method: 'post',
+          data: this.form
+        }).then(data => {
+          this.reportData = data;
+        })
+      });
     },
-    deleteMember(idx, row){
+    deleteMember (idx, row) {
       let url = '/bc/nonmember/delete';
       return request({
         url: this.contextPath + url,
         method: 'post',
-        data: {id: row.id}
+        data: { id: row.id }
       }).then(data => {
         this.$message.success('操作成功!');
         this.findClick();

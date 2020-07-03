@@ -401,6 +401,7 @@ export default {
         if (valid) {
           this.doSave().then(() => {
             this.form.value = '';
+            this.form.sex = this.form.sex == 'M' ? 'F' : 'M';
             this.$refs.refFormValue.focus();
             this.findMasterItems();
           });

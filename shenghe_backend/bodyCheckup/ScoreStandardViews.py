@@ -33,8 +33,8 @@ def findMaster(request):
 
 def find(request):
     if request.method == 'GET':
-        itemId = request.GET['itemId']
-        result = ItemScoreStandard.objects.filter(item__id=itemId)
+        itemDetailId = request.GET['itemDetailId']
+        result = ItemScoreStandard.objects.filter(itemDetail__id=itemDetailId)
         result = [r.getDict() for r in result]
         return HttpResponse(json.dumps(result, ensure_ascii=False))
     else:
@@ -45,10 +45,10 @@ def insert(request):
     if request.method == 'POST':
 
         data = json.loads(request.body)
-        itemId = data['itemId']
-        item = ItemDetail.objects.get(pk=itemId)
+        itemDetailId = data['itemDetailId']
+        itemDetail = ItemDetail.objects.get(pk=itemDetailId)
 
-        scoreStandardList = list(ItemScoreStandard.objects.filter(item_id=itemId))
+        scoreStandardList = list(ItemScoreStandard.objects.filter(itemDetail_id=itemDetailId))
         for type in ItemScoreStandard.typeChoices:
             sslist = list(filter(lambda ss: ss.periodType == type[0], scoreStandardList))
             if len(sslist) > 0:
@@ -56,7 +56,7 @@ def insert(request):
             else:
                 opss = ItemScoreStandard()
             opss.periodType = type[0]
-            opss.item = item
+            opss.itemDetail = itemDetail
             opss.lowScore = data['data'][type[0] + '_lowScore']
             opss.highScore = data['data'][type[0] + '_highScore']
             opss.scoreDesc = data['data'][type[0] + '_scoreDesc']
@@ -69,3 +69,29 @@ def insert(request):
 
 def update(request):
     return insert(request)
+
+def report(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        items = data['items']
+        if len(items) == 0:
+            return HttpResponse("FAIL")
+
+        sql = '''
+            select *
+            from bodyCheckup_itemdetail bid
+            where bid.age = %s and bid.sex = %s
+            and bid.item_id = %s
+        '''
+        searchDict = {
+            'age': data['age'],
+            'sex': data['sex']
+        }
+        for item in items:
+            if item['score']:
+                searchDict['item_id'] = item['id']
+
+
+        return HttpResponse("SUCCESS")
+    else:
+        raise BaseException('不支持GET方法')
