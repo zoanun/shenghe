@@ -80,6 +80,7 @@ class NonMemberItemScore(BaseModel):
     item = models.ForeignKey(ItemMaster, on_delete=models.CASCADE, verbose_name="项目")
     score = models.FloatField('得分')
     member = models.ForeignKey(NonMember, on_delete=models.CASCADE, verbose_name="非会员")
+    testDate = models.DateField('测试日期', default=timezone.now)
 
 
 class Member(BaseModel):
@@ -87,10 +88,11 @@ class Member(BaseModel):
     会员
     """
     id = models.AutoField(primary_key=True)
-    memeberId = models.CharField(verbose_name='会员ID', max_length=30)
+    memberId = models.CharField(verbose_name='会员ID', max_length=30)
     name = models.CharField(verbose_name='姓名', max_length=20)
     age = models.IntegerField('年龄')
     sex = models.CharField(choices=(('M', '男'), ('F', '女')), max_length=1)
+    testDate = models.DateField('测试日期', default=timezone.now)
 
 
 class MemberItemScore(BaseModel):
@@ -101,3 +103,4 @@ class MemberItemScore(BaseModel):
     item = models.ForeignKey(ItemMaster, on_delete=models.CASCADE, verbose_name="项目")
     score = models.FloatField('得分')
     member = models.ForeignKey(Member, on_delete=models.CASCADE, verbose_name="会员")
+    testDate = models.DateField('测试日期', default=timezone.now)

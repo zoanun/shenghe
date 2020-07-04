@@ -44,5 +44,4 @@ urlpatterns = [
     path('member/score', MemberScoreViews.score, name='selectMemberScore'),
     path('member/delete', MemberScoreViews.delete, name='deleteMember'),
 
-
 ]

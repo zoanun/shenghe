@@ -237,7 +237,7 @@
 <script>
 import request from '@/utils/request.js';
 export default {
-  name: 'nsim',
+  name: 'nsde',
   data () {
     return {
       query: {

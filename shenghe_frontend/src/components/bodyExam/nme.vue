@@ -139,12 +139,14 @@
                 <el-input v-model="form.age"
                   @blur="initItem"
                   type="number"
+                  :disabled="this.viewReport"
                   placeholder="年龄"
                   class="handle-input mr10"></el-input>
               </el-form-item>
               <el-form-item label="性别"
                 prop="sex">
                 <el-select v-model="form.sex"
+                  :disabled="this.viewReport"
                   @change="initItem">
                   <el-option v-for="item in combox.sex"
                     :key="item.code"
@@ -158,6 +160,7 @@
                 :key="item.id">
                 <el-input v-model="item.score"
                   :placeholder="item.name"
+                  type="number"
                   class="handle-input mr10"></el-input>
               </el-form-item>
             </el-form>
@@ -174,18 +177,21 @@
       </el-row>
 
     </div>
-    <el-dialog title="体测报告"
-      :visible.sync="reportVisible"
-      width="400px">
-      {{ reportData }}
-    </el-dialog>
+    <BodyReport :report-data='reportData'
+      :report-visible.sync="reportVisible"
+      :name="form.name"
+      :sex="listToTextFormatter(combox.sex, form.sex)"
+      :age="form.age">>
+    </BodyReport>
   </div>
 </template>
 
 <script>
 import request from '@/utils/request.js';
+import BodyReport from '@/components/bodyExam/BodyReport'
 export default {
-  name: 'nsim',
+  name: 'nme',
+  components: { BodyReport },
   data () {
     return {
       query: {
@@ -207,9 +213,9 @@ export default {
       },
       form: { title: '新增信息', items: [] },
       tableData: [],
-      viewReport: false,
-      reportVisible: false,
       reportData: [],
+      reportVisible: false,
+      viewReport: false,
       rules: {
         age: [
           { required: true, message: '请输入年龄', trigger: 'blur' }
@@ -337,15 +343,25 @@ export default {
       this.$refs.refReferee.focus();
     },
     showResult () {
-      let url = '/bc/report'
-      this.doSave().then(() => {
+      let url = '/bc/nonmember/update';
+      return request({
+        url: this.contextPath + url,
+        method: 'post',
+        data: this.form
+      }).then(() => {
+
+        url = '/bc/report'
         request({
           url: this.contextPath + url,
           method: 'post',
           data: this.form
         }).then(data => {
           this.reportData = data;
-        })
+          this.reportVisible = true;
+        });
+
+      }).catch(e => {
+        this.$message.error('发生错误，请联系管理员.');
       });
     },
     deleteMember (idx, row) {

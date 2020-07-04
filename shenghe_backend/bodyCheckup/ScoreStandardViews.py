@@ -79,12 +79,18 @@ def report(request):
 
         sql = '''
             select 
+                bim.id,
                 bim.name as item_name,
                 bid.age,
                 bid.sex,
                 bid.value as standardValue,
-                biss.periodType
+                biss.periodType,
                 biss.lowScore,
+                case when %s > biss.lowScore and %s <= biss.highScore then
+                    'Y'
+                else
+                    'N'
+                end as inLevel,
                 biss.highScore,
                 biss.scoreDesc,
                 biss.color
@@ -94,7 +100,6 @@ def report(request):
                 bodyCheckup_itemscorestandard biss
             where bid.id = biss.itemDetail_id
                 and bim.id = bid.item_id
-                and %s between biss.lowScore and biss.highScore
                 and bid.age = %s 
                 and bid.sex = %s
                 and bid.item_id = %s
@@ -103,21 +108,35 @@ def report(request):
         age = data['age']
         sex = data['sex']
         result = []
+        typeMap = {k: v for k,v in ItemScoreStandard.typeChoices}
         for item in items:
             if item['score']:
+                score = item['score']
                 itemId = item['itemId']
-                for row in ItemMaster.objects.raw(sql, [age, sex, itemId]):
-                    result.append({
-                        'name': row.name,
-                        'age': row.age,
-                        'sex': row.sex,
-                        'standardValue': row.standardValue,
+                resultItem = {
+                    'id': itemId,
+                    'score': score,
+                    'itemId': itemId,
+                    'age': age,
+                    'sex': sex,
+                    'level': []
+                }
+                for row in ItemMaster.objects.raw(sql, [score, score, age, sex, itemId]):
+                    resultItem['name'] = row.item_name
+                    resultItem['standardValue'] = row.standardValue
+                    if row.inLevel == 'Y':
+                        resultItem['periodType'] = row.periodType
+
+                    resultItem['level'].append({
+                        'inLevel': row.inLevel,
                         'periodType': row.periodType,
+                        'periodName': typeMap[row.periodType],
                         'lowScore': row.lowScore,
                         'highScore': row.highScore,
-                        'scoreDesc': row.scoreDesc,
+                        'scoreDesc': row.scoreDesc.replace('\n', '<br/>'),
                         'color': row.color
                     })
+                result.append(resultItem)
         return HttpResponse(json.dumps(result, ensure_ascii=False))
     else:
         raise BaseException('不支持GET方法')
