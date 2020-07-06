@@ -6,3 +6,5 @@ shenghe_frontend/package-lock.json
 .idea/
 shenghe_backend/__pycache__/
 shenghe_frontend/src/api/index.js
+shenghe_backend/build/
+shenghe_backend/dist/

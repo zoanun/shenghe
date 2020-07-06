@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.db.models import F
 from .models import *
 import json
 
@@ -64,7 +65,9 @@ def score(request):
         searchDict = {
             'member_id': id,
             'item__itemdetail__age': age,
-            'item__itemdetail__sex': sex
+            'item__itemdetail__sex': sex,
+            'item__itemdetail__staDate__lte': F('testDate'),
+            'item__itemdetail__endDate__gte': F('testDate')
         }
         result = MemberItemScore.objects.filter(**searchDict)
         result = result.values('id', 'item__id', 'item__name', 'item__itemdetail__value', 'score')
