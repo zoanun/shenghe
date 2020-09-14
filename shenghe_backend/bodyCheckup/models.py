@@ -40,11 +40,10 @@ class ItemScoreStandard(BaseModel):
     id = models.AutoField(primary_key=True)
     itemDetail = models.ForeignKey(ItemDetail, on_delete=models.CASCADE, verbose_name="项目")
     typeChoices = (
-        ('SUPERLOWER', '超低'),
-        ('LOWER', '偏低'),
-        ('NORMAL', '正常'),
-        ('HIGH', '偏高'),
-        ('SUPERHIGH', '超高'),
+        ('FAILED', '不及格'),
+        ('PASS', '及格'),
+        ('GOOD', '良好'),
+        ('EXCELLENT', '优秀'),
     )
     periodType = models.CharField(max_length=10, choices=typeChoices)
     lowScore = models.FloatField('范围开始值')
