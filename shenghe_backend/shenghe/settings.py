@@ -30,7 +30,8 @@ ALLOWED_HOSTS = [
     '31994g39q3.zicp.vip',
     'zoanun.top',
     'localhost',
-    '127.0.0.1'
+    '127.0.0.1',
+    '47.98.182.195'
 ]
 
 

@@ -176,6 +176,8 @@
                   prop="age">
                   <el-input v-model.trim="form.age"
                     type="number"
+                    ref="refFormAge"
+                    @keyup.enter.native="saveAndContinue"
                     class="handle-input"></el-input>
                 </el-form-item>
                 <el-form-item label="性别"
@@ -400,9 +402,9 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           this.doSave().then(() => {
-            this.form.value = '';
+            this.form.value = '0';
             this.form.sex = this.form.sex == 'M' ? 'F' : 'M';
-            this.$refs.refFormValue.focus();
+            this.$refs.refFormAge.focus();
             this.findMasterItems();
           });
         } else {
