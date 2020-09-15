@@ -10,381 +10,432 @@
     <div class="container">
       <div class="handle-box">
         <el-button icon="el-icon-circle-plus-outline"
-          class="mr10"
-          @click="addNew">新增</el-button>
+                   class="mr10"
+                   @click="addNew"
+        >
+          新增
+        </el-button>
         <el-input v-model="query.referee"
-          placeholder="推荐人"
-          class="handle-input1 mr10"></el-input>
+                  placeholder="推荐人"
+                  class="handle-input1 mr10"
+        ></el-input>
         <el-select v-model="query.channel"
-          placeholder="渠道"
-          class="handle-select1 mr10">
+                   placeholder="渠道"
+                   class="handle-select1 mr10"
+        >
           <el-option key="A"
-            label="所有"
-            value="A" />
+                     label="所有"
+                     value="A"
+          />
           <el-option v-for="item in combox.channel"
-            :key="item.code"
-            :label="item.label"
-            :value="item.code">
+                     :key="item.code"
+                     :label="item.label"
+                     :value="item.code"
+          >
           </el-option>
         </el-select>
         <el-input v-model.number="query.age"
-          type="number"
-          placeholder="年龄"
-          class="handle-input1 mr10">
+                  type="number"
+                  placeholder="年龄"
+                  class="handle-input1 mr10"
+        >
         </el-input>
         <el-select v-model="query.sex"
-          placeholder="性别"
-          class="handle-select1 mr10">
+                   placeholder="性别"
+                   class="handle-select1 mr10"
+        >
           <el-option key="A"
-            label="所有"
-            value="A" />
+                     label="所有"
+                     value="A"
+          />
           <el-option v-for="item in combox.sex"
-            :key="item.code"
-            :label="item.label"
-            :value="item.code">
+                     :key="item.code"
+                     :label="item.label"
+                     :value="item.code"
+          >
           </el-option>
         </el-select>
         <el-input v-model="query.name"
-          placeholder="姓名"
-          class="handle-input1 mr10">
+                  placeholder="姓名"
+                  class="handle-input1 mr10"
+        >
         </el-input>
         <el-button type="primary"
-          icon="el-icon-search"
-          @click="findClick">
+                   icon="el-icon-search"
+                   @click="findClick"
+        >
           搜索
         </el-button>
       </div>
       <el-row>
         <el-col :span="10">
           <!-- 表格 -->
-          <el-table :data="tableData"
-            border
-            class="table"
-            ref="itemTable"
-            header-cell-class-name="table-header"
-            @current-change="handleItemChange">
+          <el-table ref="itemTable"
+                    :data="tableData"
+                    border
+                    class="table"
+                    header-cell-class-name="table-header"
+                    @current-change="handleItemChange"
+          >
             <el-table-column prop="id"
-              label="ID"
-              width="55"
-              align="center">
+                             label="ID"
+                             width="55"
+                             align="center"
+            >
             </el-table-column>
             <el-table-column prop="referee"
-              label="推荐人"
-              width="100"
-              align="center">
+                             label="推荐人"
+                             width="100"
+                             align="center"
+            >
             </el-table-column>
             <el-table-column label="渠道"
-              width="110">
+                             width="110"
+            >
               <template slot-scope="scope">
                 {{ listToTextFormatter(combox.channel, scope.row.channel) }}
               </template>
             </el-table-column>
             <el-table-column prop="age"
-              label="年龄"
-              width="80"
-              align="center">
+                             label="年龄"
+                             width="80"
+                             align="center"
+            >
             </el-table-column>
             <el-table-column label="性别"
-              width="55">
+                             width="55"
+            >
               <template slot-scope="scope">
                 {{ listToTextFormatter(combox.sex, scope.row.sex) }}
               </template>
             </el-table-column>
             <el-table-column prop="name"
-              label="名字"
-              align="center">
+                             label="名字"
+                             align="center"
+            >
             </el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button type="text"
-                  icon="el-icon-delete"
-                  @click="deleteMember(scope.$index, scope.row)">删除</el-button>
+                           icon="el-icon-delete"
+                           @click="deleteMember(scope.$index, scope.row)"
+                >
+                  删除
+                </el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-col>
         <el-col :span="14">
           <div class="form-box">
-            <div class="title">{{ form.title }} </div>
+            <div class="title">
+              {{ form.title }}
+            </div>
             <el-form ref="form"
-              :model="form"
-              :rules="rules"
-              label-width="180px">
+                     :model="form"
+                     :rules="rules"
+                     label-width="180px"
+            >
               <el-form-item label="推荐人">
-                <el-input v-model="form.referee"
-                  ref="refReferee"
-                  placeholder="推荐人"
-                  class="handle-input mr10"></el-input>
+                <el-input ref="refReferee"
+                          v-model="form.referee"
+                          placeholder="推荐人"
+                          class="handle-input mr10"
+                ></el-input>
               </el-form-item>
               <el-form-item label="渠道"
-                prop="name">
+                            prop="name"
+              >
                 <el-select v-model="form.channel"
-                  placeholder="渠道"
-                  class="handle-select mr10">
+                           placeholder="渠道"
+                           class="handle-select mr10"
+                >
                   <el-option v-for="item in combox.channel"
-                    :key="item.code"
-                    :label="item.label"
-                    :value="item.code">
+                             :key="item.code"
+                             :label="item.label"
+                             :value="item.code"
+                  >
                   </el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="姓名"
-                prop="name">
+                            prop="name"
+              >
                 <el-input v-model="form.name"
-                  placeholder="姓名"
-                  class="handle-input mr10"></el-input>
+                          placeholder="姓名"
+                          class="handle-input mr10"
+                ></el-input>
               </el-form-item>
               <el-form-item label="年龄"
-                prop="age">
+                            prop="age"
+              >
                 <el-input v-model="form.age"
-                  @blur="initItem"
-                  type="number"
-                  :disabled="this.viewReport"
-                  placeholder="年龄"
-                  class="handle-input mr10"></el-input>
+                          type="number"
+                          :disabled="viewReport"
+                          placeholder="年龄"
+                          class="handle-input mr10"
+                          @blur="initItem"
+                ></el-input>
               </el-form-item>
               <el-form-item label="性别"
-                prop="sex">
+                            prop="sex"
+              >
                 <el-select v-model="form.sex"
-                  :disabled="this.viewReport"
-                  @change="initItem">
+                           :disabled="viewReport"
+                           @change="initItem"
+                >
                   <el-option v-for="item in combox.sex"
-                    :key="item.code"
-                    :label="item.label"
-                    :value="item.code">
+                             :key="item.code"
+                             :label="item.label"
+                             :value="item.code"
+                  >
                   </el-option>
                 </el-select>
               </el-form-item>
+              <!--:label="item.name+'('+item.value+')'" -->
               <el-form-item v-for="(item) in form.items"
-                :label="item.name+'('+item.value+')'"
-                :key="item.id">
+                            :key="item.id"
+                            :label="item.name"
+              >
                 <el-input v-model="item.score"
-                  :placeholder="item.name"
-                  type="number"
-                  class="handle-input mr10"></el-input>
+                          :placeholder="item.name"
+                          type="number"
+                          class="handle-input mr10"
+                ></el-input>
               </el-form-item>
             </el-form>
             <div style="text-align: center">
-              <el-button @click="reset">重新填写</el-button>
+              <el-button @click="reset">
+                重新填写
+              </el-button>
               <el-button type="primary"
-                @click="saveClick">保存</el-button>
+                         @click="saveClick"
+              >
+                保存
+              </el-button>
               <el-button type="primary"
-                @click="showResult"
-                :disabled="!viewReport">查看结果报表</el-button>
+                         :disabled="!viewReport"
+                         @click="showResult"
+              >
+                查看结果报表
+              </el-button>
             </div>
           </div>
         </el-col>
       </el-row>
-
     </div>
-    <BodyReport :report-data='reportData'
-      :report-visible.sync="reportVisible"
-      :name="form.name"
-      :sex="listToTextFormatter(combox.sex, form.sex)"
-      :age="form.age">>
+    <BodyReport :report-data="reportData"
+                :report-visible.sync="reportVisible"
+                :name="form.name"
+                :sex="listToTextFormatter(combox.sex, form.sex)"
+                :age="form.age"
+    >
+      >
     </BodyReport>
   </div>
 </template>
 
 <script>
-import request from '@/utils/request.js';
-import BodyReport from '@/components/bodyExam/BodyReport'
-export default {
-  name: 'nme',
-  components: { BodyReport },
-  data () {
-    return {
-      query: {
-        channel: '',
-        referee: '',
-        age: '',
-        sex: '',
-        name: ''
-      },
-      combox: {
-        sex: [{
-          code: 'M',
-          label: '男性'
-        }, {
-          code: 'F',
-          label: '女性'
-        }],
-        channel: []
-      },
-      form: { title: '新增信息', items: [] },
-      tableData: [],
-      reportData: [],
-      reportVisible: false,
-      viewReport: false,
-      rules: {
-        age: [
-          { required: true, message: '请输入年龄', trigger: 'blur' }
-        ],
-        sex: [
-          { required: true, message: '请输入性别', trigger: 'blur' }
-        ]
-      },
-      contextPath: localStorage.getItem('backendContextPath')
-    };
-  },
-  mounted () {
-    this.init();
-  },
-  methods: {
-    init () {
-      request({
-        url: this.contextPath + '/bc/api/channel',
-        method: 'get',
-      }).then(result => {
-        this.combox.channel = result.map(data => {
-          return { code: data[0], label: data[1] };
-        });
-        this.findClick();
-      });
-    },
-    initItem () {
-      if (this.form.age && this.form.sex) {
-        return request({
-          url: this.contextPath + '/bc/nonmember/master',
-          method: 'get',
-          params: this.form
-        }).then(data => {
-          this.form.items = data;
-        });
-      }
-    },
-    addNew () {
-      this.form = {
-        title: '新增信息',
-        items: []
+  import request from '@/utils/request.js';
+  import BodyReport from '@/components/bodyExam/BodyReport';
+  export default {
+    name: 'Nme',
+    components: { BodyReport },
+    data () {
+      return {
+        query: {
+          channel: '',
+          referee: '',
+          age: '',
+          sex: '',
+          name: ''
+        },
+        combox: {
+          sex: [{
+            code: 'M',
+            label: '男性'
+          }, {
+            code: 'F',
+            label: '女性'
+          }],
+          channel: []
+        },
+        form: { title: '新增信息', items: [] },
+        tableData: [],
+        reportData: [],
+        reportVisible: false,
+        viewReport: false,
+        rules: {
+          age: [
+            { required: true, message: '请输入年龄', trigger: 'blur' }
+          ],
+          sex: [
+            { required: true, message: '请输入性别', trigger: 'blur' }
+          ]
+        },
+        contextPath: localStorage.getItem('backendContextPath')
       };
-      this.viewReport = false;
-      this.$refs.refReferee.focus();
     },
-    findClick () {
-      request({
-        url: this.contextPath + '/bc/nonmember',
-        method: 'get',
-        params: this.query
-      }).then(data => {
+    mounted () {
+      this.init();
+    },
+    methods: {
+      init () {
+        request({
+          url: this.contextPath + '/bc/api/channel',
+          method: 'get',
+        }).then(result => {
+          this.combox.channel = result.map(data => {
+            return { code: data[0], label: data[1] };
+          });
+          this.findClick();
+        });
+      },
+      initItem () {
+        if (this.form.age && this.form.sex) {
+          return request({
+            url: this.contextPath + '/bc/nonmember/master',
+            method: 'get',
+            params: this.form
+          }).then(data => {
+            this.form.items = data;
+          });
+        }
+      },
+      addNew () {
         this.form = {
+          title: '新增信息',
           items: []
         };
-        this.tableData = data.map(item => {
-          return { ...item, isSelected: false }
-        });
         this.viewReport = false;
-      }).catch(e => {
-        this.$message.error('发生错误，请联系管理员.');
-      })
-    },
-    saveClick () {
-      this.$refs.form.validate(valid => {
-        if (valid) {
-          this.doSave();
-        } else {
-          this.$message.error('输入项有误，请检查！');
-          return false;
-        }
-      });
-    },
-    doSave () {
-      let url = '/bc/nonmember/insert';
-      if (this.form.id === 0 || this.form.id) {
-        url = '/bc/nonmember/update';
-      }
-      return request({
-        url: this.contextPath + url,
-        method: 'post',
-        data: this.form
-      }).then(data => {
-        this.$message.success('操作成功!');
-        this.findClick();
-      }).catch(e => {
-        this.$message.error('发生错误，请联系管理员.');
-      });
-    },
-    reset () {
-      this.form.items = [];
-      this.initItem();
-      this.$refs.refReferee.focus();
-    },
-    handleItemChange (row) {
-      if (!row) return;
-      let url = '/bc/nonmember/score'
-      request({
-        url: this.contextPath + url,
-        method: 'get',
-        params: {
-          id: row.id,
-          referee: row.referee,
-          channel: row.channel,
-          age: row.age,
-          sex: row.sex,
-          name: row.name
-        }
-      }).then(data => {
-        let items = [];
-        data.forEach(d => {
-          items.push(d);
-        });
-        this.form = {
-          title: '查看信息',
-          id: row.id,
-          referee: row.referee,
-          channel: row.channel,
-          age: row.age,
-          sex: row.sex,
-          name: row.name,
-          items: items
-        };
-      });
-      this.viewReport = true;
-      this.$refs.refReferee.focus();
-    },
-    showResult () {
-      let url = '/bc/nonmember/update';
-      return request({
-        url: this.contextPath + url,
-        method: 'post',
-        data: this.form
-      }).then(() => {
-
-        url = '/bc/report'
+        this.$refs.refReferee.focus();
+      },
+      findClick () {
         request({
+          url: this.contextPath + '/bc/nonmember',
+          method: 'get',
+          params: this.query
+        }).then(data => {
+          this.form = {
+            items: []
+          };
+          this.tableData = data.map(item => {
+            return { ...item, isSelected: false };
+          });
+          this.viewReport = false;
+        }).catch(e => {
+          this.$message.error('发生错误，请联系管理员.');
+        });
+      },
+      saveClick () {
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            this.doSave();
+          } else {
+            this.$message.error('输入项有误，请检查！');
+            return false;
+          }
+        });
+      },
+      doSave () {
+        let url = '/bc/nonmember/insert';
+        if (this.form.id === 0 || this.form.id) {
+          url = '/bc/nonmember/update';
+        }
+        return request({
           url: this.contextPath + url,
           method: 'post',
           data: this.form
         }).then(data => {
-          this.reportData = data;
-          this.reportVisible = true;
+          this.$message.success('操作成功!');
+          this.findClick();
+        }).catch(e => {
+          this.$message.error('发生错误，请联系管理员.');
         });
+      },
+      reset () {
+        this.form.items = [];
+        this.initItem();
+        this.$refs.refReferee.focus();
+      },
+      handleItemChange (row) {
+        if (!row) {
+          return;
+        }
+        let url = '/bc/nonmember/score';
+        request({
+          url: this.contextPath + url,
+          method: 'get',
+          params: {
+            id: row.id,
+            referee: row.referee,
+            channel: row.channel,
+            age: row.age,
+            sex: row.sex,
+            name: row.name
+          }
+        }).then(data => {
+          let items = [];
+          data.forEach(d => {
+            items.push(d);
+          });
+          this.form = {
+            title: '查看信息',
+            id: row.id,
+            referee: row.referee,
+            channel: row.channel,
+            age: row.age,
+            sex: row.sex,
+            name: row.name,
+            items: items
+          };
+        });
+        this.viewReport = true;
+        this.$refs.refReferee.focus();
+      },
+      showResult () {
+        let url = '/bc/nonmember/update';
+        return request({
+          url: this.contextPath + url,
+          method: 'post',
+          data: this.form
+        }).then(() => {
 
-      }).catch(e => {
-        this.$message.error('发生错误，请联系管理员.');
-      });
-    },
-    deleteMember (idx, row) {
-      let url = '/bc/nonmember/delete';
-      return request({
-        url: this.contextPath + url,
-        method: 'post',
-        data: { id: row.id }
-      }).then(data => {
-        this.$message.success('操作成功!');
-        this.findClick();
-      }).catch(e => {
-        this.$message.error('发生错误，请联系管理员.');
-      });
-    },
-    listToTextFormatter (list, val) {
-      let data = list.find((value, index, arr) => {
-        return value.code === val;
-      });
-      return !data ? '' : data['label'];
+          url = '/bc/report';
+          request({
+            url: this.contextPath + url,
+            method: 'post',
+            data: this.form
+          }).then(data => {
+            this.reportData = data;
+            this.reportVisible = true;
+          });
+
+        }).catch(e => {
+          this.$message.error('发生错误，请联系管理员.');
+        });
+      },
+      deleteMember (idx, row) {
+        let url = '/bc/nonmember/delete';
+        return request({
+          url: this.contextPath + url,
+          method: 'post',
+          data: { id: row.id }
+        }).then(data => {
+          this.$message.success('操作成功!');
+          this.findClick();
+        }).catch(e => {
+          this.$message.error('发生错误，请联系管理员.');
+        });
+      },
+      listToTextFormatter (list, val) {
+        let data = list.find((value, index, arr) => {
+          return value.code === val;
+        });
+        return !data ? '' : data['label'];
+      }
     }
-  }
-};
+  };
 </script>
 
 <style scoped>

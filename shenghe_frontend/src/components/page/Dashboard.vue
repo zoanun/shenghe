@@ -1,39 +1,41 @@
 <template>
-    <div>
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <el-card shadow="hover" class="mgb20" style="height:180px;">
-                    <div class="user-info">
-                        <img src="../../assets/img/img.jpg" class="user-avator" alt />
-                        <div class="user-info-cont">
-                            <div class="user-info-name">{{name}}</div>
-                            <div>{{role}}</div>
-                        </div>
-                    </div>
-                </el-card>
-            </el-col>
-        </el-row>
-    </div>
+  <div>
+    <el-row :gutter="20">
+      <el-col :span="8">
+        <el-card shadow="hover" class="mgb20" style="height:180px;">
+          <div class="user-info">
+            <img src="../../assets/img/img.jpg" class="user-avator" alt />
+            <div class="user-info-cont">
+              <div class="user-info-name">
+                {{ name }}
+              </div>
+              <div>{{ role }}</div>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 
 <script>
-import bus from '../common/bus';
-export default {
-    name: 'dashboard',
+//   import bus from '../common/bus';
+  export default {
+    name: 'Dashboard',
     data() {
-        return {
-            name: localStorage.getItem('ms_username'),
-        };
+      return {
+        name: localStorage.getItem('ms_username'),
+      };
     },
-    
+
     computed: {
-        role() {
-            return this.name === 'admin' ? '超级管理员' : '普通用户';
-        }
+      role() {
+        return this.name === 'admin' ? '超级管理员' : '普通用户';
+      }
     },
     methods: {
     }
-};
+  };
 </script>
 
 

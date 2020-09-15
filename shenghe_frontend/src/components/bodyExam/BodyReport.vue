@@ -1,17 +1,19 @@
 <template>
   <el-dialog :visible.sync="dialogVisible"
-    :close-on-click-modal="false"
-    :close-on-press-escape="false"
-    title="体测报告"
-    append-to-body
-    width="800px"
-    @opened="onOpened"
-    @close="onClose">
+             :close-on-click-modal="false"
+             :close-on-press-escape="false"
+             title="体测报告"
+             append-to-body
+             width="800px"
+             @opened="onOpened"
+             @close="onClose"
+  >
     <div>
       <div id="printMe">
-        <div class='user'>
-          <el-form :inline="true"
-            v-if="reportData && reportData.length > 0">
+        <div class="user">
+          <el-form v-if="reportData && reportData.length > 0"
+                   :inline="true"
+          >
             <el-form-item label="用户">
               {{ name }}
             </el-form-item>
@@ -23,50 +25,59 @@
             </el-form-item>
           </el-form>
         </div>
-        <div class='chart'>
-          <div class='line'
-            v-for="item in reportData"
-            :key="item.id">
-
+        <div class="chart">
+          <div v-for="item in reportData"
+               :key="item.id"
+               class="line"
+          >
             <span class="item-title">
               项目： {{ item.name }} ( 国标值： {{ item.standardValue }}, 测量值： {{ item.score }})
             </span>
             <br />
 
             <div v-for="(level, idx) in item.level"
-              :key="level.periodType + 'score'">
+                 :key="level.periodType + 'score'"
+            >
               <span v-if="idx!==0"
-                class="score">{{ level.lowScore}}</span>
+                    class="score"
+              >{{ level.lowScore }}</span>
             </div><br />
 
             <div v-for="(level) in item.level"
-              class='tag'
-              :key="level.periodType + 'tag'">
+                 :key="level.periodType + 'tag'"
+                 class="tag"
+            >
               <span v-if="level.inLevel === 'Y'"
-                :style="{left: (item.score - level.lowScore) / (level.highScore - level.lowScore) * 100 - 5 + 'px'}"><img src="@/assets/img/tag.png"></span>
+                    :style="{left: (item.score - level.lowScore) / (level.highScore - level.lowScore) * 100 - 5 + 'px'}"
+              ><img src="@/assets/img/tag.png"></span>
             </div>
             <br />
 
             <div v-for="level in item.level"
-              class='bar'
-              :style="{'background-color': level.color}"
-              :key="level.periodType + 'bar'">
+                 :key="level.periodType + 'bar'"
+                 class="bar"
+                 :style="{'background-color': level.color}"
+            >
             </div><br />
 
             <div v-for="(level) in item.level"
-              class='name'
-              :key="level.periodType + 'name'">
+                 :key="level.periodType + 'name'"
+                 class="name"
+            >
               <span>{{ level.periodName }}</span>
             </div>
             <br />
             <br />
             <span v-for="(level) in item.level"
-              class='desc'
-              :key="level.periodType + 'scoreDesc'">
+                  :key="level.periodType + 'scoreDesc'"
+                  class="desc"
+            >
               <div v-if="level.inLevel === 'Y'"
-                class="title">评语：<br /></div>
+                   class="title"
+              >评语：<br /></div>
               <span v-if="level.inLevel === 'Y'"
-                v-html="level.scoreDesc">
+                    v-html="level.scoreDesc"
+              >
               </span>
             </span>
             <br /><br />
@@ -75,8 +86,11 @@
         </div>
       </div>
       <div slot="footer">
-        <el-button type="primary"
-          v-print="printProp"> 打 印 </el-button>
+        <el-button v-print="printProp"
+                   type="primary"
+        >
+          打 印
+        </el-button>
       </div>
     </div>
   </el-dialog>
@@ -84,57 +98,57 @@
 
 <script>
 
-export default {
-  name: 'BodyReport',
-  components: {},
-  props: {
-    reportVisible: {
-      type: Boolean,
-      default: false
-    },
-    reportData: {
-      type: Array,
-      default: function () {
-        return [];
+  export default {
+    name: 'BodyReport',
+    components: {},
+    props: {
+      reportVisible: {
+        type: Boolean,
+        default: false
+      },
+      reportData: {
+        type: Array,
+        default: function () {
+          return [];
+        }
+      },
+      name: {
+        type: String,
+        default: ''
+      },
+      sex: {
+        type: String,
+        default: ''
+      },
+      age: {
+        type: Number,
+        default: 0
       }
     },
-    name: {
-      type: String,
-      default: ''
+    data () {
+      return {
+        dialogVisible: false,
+        printProp: {
+          id: 'printMe',
+          popTitle: '盛和国际跆拳道'
+        }
+      };
     },
-    sex: {
-      type: String,
-      default: ''
-    },
-    age: {
-      type: Number,
-      default: 0
-    }
-  },
-  data () {
-    return {
-      dialogVisible: false,
-      printProp: {
-        id: 'printMe',
-        popTitle: '盛和国际跆拳道'
+    watch: {
+      reportVisible (val) {
+        this.dialogVisible = val;
       }
-    };
-  },
-  watch: {
-    reportVisible (val) {
-      this.dialogVisible = val;
+    },
+    methods: {
+      onOpened () {
+
+      },
+      onClose () {
+        this.$emit('update:reportVisible', false);
+      },
+
     }
-  },
-  methods: {
-    onOpened () {
-
-    },
-    onClose () {
-      this.$emit('update:reportVisible', false);
-    },
-
-  }
-};
+  };
 </script>
 
 <style scoped>
