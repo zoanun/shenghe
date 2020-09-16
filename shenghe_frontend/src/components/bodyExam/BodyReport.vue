@@ -106,10 +106,8 @@
         default: false
       },
       reportData: {
-        type: Array,
-        default: function () {
-          return [];
-        }
+        type: Object,
+        default: () => {}
       },
       name: {
         type: String,

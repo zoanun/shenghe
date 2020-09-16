@@ -3,6 +3,7 @@ from django.db import models
 
 from .BaseModel import BaseModel
 
+
 class ItemMaster(BaseModel):
     """
     国家标准项目管理
@@ -45,6 +46,12 @@ class ItemScoreStandard(BaseModel):
         ('GOOD', '良好'),
         ('EXCELLENT', '优秀'),
     )
+    scoreDesc = {
+        "FAILED" : {"score": 1, "desc": "体能综合表现需加强，多加强有氧运动，提升核心（腰部，腹部，臀部）力量，加强柔韧性练习，多做放化式运动。"},
+        "PASS": {"score": 2, "desc": "体能综合表现一般，建议加强协调性练习，强化爆发力及灵敏度练习。"},
+        "GOOD": {"score": 3, "desc": "整体表现良好，建议多做专项练习，强化小肌肉群力量，多做手脚协同配合练习。"},
+        "EXCELLENT": {"score": 4, "desc": "整体机能不错，建议继续保持，可多加强力量，爆发力，强化韧带，加大训练强度。"}
+    }
     periodType = models.CharField(max_length=10, choices=typeChoices)
     lowScore = models.FloatField('范围开始值')
     highScore = models.FloatField('范围结束值')
@@ -78,7 +85,7 @@ class NonMemberItemScore(BaseModel):
     id = models.AutoField(primary_key=True)
     item = models.ForeignKey(ItemMaster, on_delete=models.CASCADE, verbose_name="项目")
     score = models.FloatField('得分')
-    member = models.ForeignKey(NonMember, on_delete=models.CASCADE, verbose_name="非会员")
+    member = models.ForeignKey(NonMember, related_name="items", on_delete=models.CASCADE, verbose_name="非会员")
     testDate = models.DateField('测试日期', default=timezone.now)
 
 
@@ -101,5 +108,6 @@ class MemberItemScore(BaseModel):
     id = models.AutoField(primary_key=True)
     item = models.ForeignKey(ItemMaster, on_delete=models.CASCADE, verbose_name="项目")
     score = models.FloatField('得分')
-    member = models.ForeignKey(Member, on_delete=models.CASCADE, verbose_name="会员")
+    member = models.ForeignKey(Member, related_name="items", on_delete=models.CASCADE, verbose_name="会员")
     testDate = models.DateField('测试日期', default=timezone.now)
+

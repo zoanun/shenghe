@@ -230,7 +230,6 @@
                 :sex="listToTextFormatter(combox.sex, form.sex)"
                 :age="form.age"
     >
-      >
     </BodyReport>
   </div>
 </template>
