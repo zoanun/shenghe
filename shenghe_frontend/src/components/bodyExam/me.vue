@@ -157,7 +157,7 @@
               </el-form-item>
               <el-form-item v-for="(item) in form.items"
                             :key="item.id"
-                            :label="item.name+'('+item.value+')'"
+                            :label="item.name"
               >
                 <el-input v-model="item.score"
                           :placeholder="item.name"

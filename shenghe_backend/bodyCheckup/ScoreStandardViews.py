@@ -70,6 +70,7 @@ def insert(request):
 def update(request):
     return insert(request)
 
+
 def report(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -107,7 +108,10 @@ def report(request):
         '''
         age = data['age']
         sex = data['sex']
-        result = []
+        result = {
+            'currentTest': [],
+            'lastestTest': []
+        }
         typeMap = {k: v for k,v in ItemScoreStandard.typeChoices}
         for item in items:
             if item['score']:
@@ -116,6 +120,7 @@ def report(request):
                 resultItem = {
                     'id': itemId,
                     'score': score,
+                    'displayScore': score,
                     'itemId': itemId,
                     'age': age,
                     'sex': sex,
@@ -136,7 +141,18 @@ def report(request):
                         'scoreDesc': row.scoreDesc.replace('\n', '<br/>'),
                         'color': row.color
                     })
+                lowest = list(filter(lambda level: level['periodType'] == ItemScoreStandard.typeChoices[0][0], resultItem['level']))[0]
+                highest = list(filter(lambda level: level['periodType'] == ItemScoreStandard.typeChoices[-1][0], resultItem['level']))[0]
+                if score < lowest['lowScore']:
+                    lowest['inLevel'] = 'Y'
+                    resultItem['periodType'] = ItemScoreStandard.typeChoices[0][0]
+                    resultItem['displayScore'] = lowest['lowScore']
+                if score > highest['highScore']:
+                    highest['inLevel'] = 'Y'
+                    resultItem['periodType'] = ItemScoreStandard.typeChoices[-1][0]
+                    resultItem['displayScore'] = highest['highScore']
                 result.append(resultItem)
+
         return HttpResponse(json.dumps(result, ensure_ascii=False))
     else:
         raise BaseException('不支持GET方法')

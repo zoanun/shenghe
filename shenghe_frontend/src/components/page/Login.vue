@@ -50,7 +50,7 @@
           if (valid) {
             this.$message.success('登录成功');
             localStorage.setItem('ms_username', this.param.username);
-            localStorage.setItem('backendContextPath', 'http://47.98.182.195');
+            localStorage.setItem('backendContextPath', 'http://localhost');
             this.$router.push('/');
           } else {
             this.$message.error('请输入账号和密码');

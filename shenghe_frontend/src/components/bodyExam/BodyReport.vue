@@ -31,7 +31,7 @@
                class="line"
           >
             <span class="item-title">
-              项目： {{ item.name }} ( 国标值： {{ item.standardValue }}, 测量值： {{ item.score }})
+              项目： {{ item.name }} ( 测量值： {{ item.score }})
             </span>
             <br />
 
@@ -75,9 +75,8 @@
               <div v-if="level.inLevel === 'Y'"
                    class="title"
               >评语：<br /></div>
-              <span v-if="level.inLevel === 'Y'"
-                    v-html="level.scoreDesc"
-              >
+              <span v-if="level.inLevel === 'Y'">
+                {{ level.scoreDesc }}
               </span>
             </span>
             <br /><br />
