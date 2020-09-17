@@ -9,27 +9,24 @@
              @close="onClose"
   >
     <div>
-      <div id="printMe" class="A4">
-        <fieldset>
-          <legend>盛和国际跆拳道少儿体测报告</legend>
-          <div class="user">
-            <el-form v-if="reportData && reportData.current_test && reportData.current_test.length > 0"
-                     :inline="true"
-            >
-              <el-form-item label="用户">
-                {{ name }}
-              </el-form-item>
-              <el-form-item label="年龄">
-                {{ age }}
-              </el-form-item>
-              <el-form-item label="性别">
-                {{ sex }}
-              </el-form-item>
-            </el-form>
-          </div>
-          <div class="chart">
-          </div>
-        </fieldset>
+      <div id="printMe">
+        <div class="user">
+          <el-form v-if="reportData && reportData.current_test && reportData.current_test.length > 0"
+                   :inline="true"
+          >
+            <el-form-item label="用户">
+              {{ name }}
+            </el-form-item>
+            <el-form-item label="年龄">
+              {{ age }}
+            </el-form-item>
+            <el-form-item label="性别">
+              {{ sex }}
+            </el-form-item>
+          </el-form>
+        </div>
+        <div class="chart">
+        </div>
       </div>
       <div slot="footer">
         <el-button v-print="printProp"
@@ -111,65 +108,24 @@
 </script>
 
 <style scoped>
-@import '@/assets/css/pager.css';
-@page {
-    size: A4;
+#printMe {
+    width: 756px;
+    height: 1086px;
+    background-image: url(../../assets/img/report-bg.png);
+    -webkit-print-color-adjust: exact;
 }
 
-.line .item-title {
-    font-size: 20px;
-    font-weight: bold;
+@page {
+    size: auto; /* auto is the initial value */
+    margin: 3mm; /* this affects the margin in the printer settings */
 }
-.line > div {
-    display: inline-block;
-    width: 100px;
+html {
+    background-color: #ffffff;
+    margin: 0px; /* this affects the margin on the html before sending to printer */
 }
-.line .bar {
-    height: 10px;
-    border-radius: 10px;
-}
-.line .score {
-    position: relative;
-    left: -10px;
-    top: 14px;
-}
-.line .name {
-    position: relative;
-    left: 40px;
-}
-.line .tag {
-    position: relative;
-    top: 8px;
-    font-size: 1.5em;
-}
-.line .tag span {
-    position: relative;
-}
-.line .desc .title {
-    color: darkgreen;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-.line .desc span {
-    font-size: 14px;
-    line-height: 20px;
-}
-hr {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-div >>> .el-dialog__header {
-    background-color: #eeeeee;
-    font-weight: bold;
-}
-.el-form-item {
-    width: 200px;
-}
-div >>> .el-form-item__label {
-    font-weight: bold;
-}
-#printMe {
-    -webkit-print-color-adjust: exact;
+body {
+    border: solid 1px blue;
+    margin: 10mm 15mm 10mm 15mm; /* margin you want for the content */
 }
 </style>
 

@@ -3,7 +3,7 @@ import App from './App.vue';
 import router from './router';
 import ElementUI from 'element-ui';
 import VueI18n from 'vue-i18n';
-import Print from '@/utils/print';
+import Print from 'vue-print-nb';
 import {
   messages
 } from './components/common/i18n';
