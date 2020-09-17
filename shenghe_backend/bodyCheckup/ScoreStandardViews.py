@@ -89,7 +89,8 @@ def fetchData(data):
             end as inLevel,
             biss.highScore,
             biss.scoreDesc,
-            biss.color
+            biss.color,
+            bim.type
         from
             bodyCheckup_itemmaster bim,
             bodyCheckup_itemdetail bid,
@@ -133,16 +134,17 @@ def fetchData(data):
                     "scoreDesc": row.scoreDesc.replace("\n", "<br/>"),
                     "color": row.color
                 })
-            lowest = list(filter(lambda level: level["periodType"] == ItemScoreStandard.typeChoices[0][0], resultItem["level"]))[0]
-            highest = list(filter(lambda level: level["periodType"] == ItemScoreStandard.typeChoices[-1][0], resultItem["level"]))[0]
-            if score < lowest["lowScore"]:
-                lowest["inLevel"] = "Y"
+                resultItem["type"] = row.type
+            lowestLevel = list(filter(lambda level: level["periodType"] == ItemScoreStandard.typeChoices[0][0], resultItem["level"]))[0]
+            highestLevel = list(filter(lambda level: level["periodType"] == ItemScoreStandard.typeChoices[-1][0], resultItem["level"]))[0]
+            if score < lowestLevel["lowScore"]:
+                lowestLevel["inLevel"] = "Y"
                 resultItem["periodType"] = ItemScoreStandard.typeChoices[0][0]
-                resultItem["displayScore"] = lowest["lowScore"]
-            if score > highest["highScore"]:
-                highest["inLevel"] = "Y"
+                resultItem["displayScore"] = lowestLevel["lowScore"]
+            if score > highestLevel["highScore"]:
+                highestLevel["inLevel"] = "Y"
                 resultItem["periodType"] = ItemScoreStandard.typeChoices[-1][0]
-                resultItem["displayScore"] = highest["highScore"]
+                resultItem["displayScore"] = highestLevel["highScore"]
             result.append(resultItem)
     return result
 
@@ -170,8 +172,9 @@ def report(request):
 
 
 def getAvgScoreDesc(items):
-    scoreDesc = ItemScoreStandard.scoreDesc
-    total_score = sum(list(map(lambda item: scoreDesc[item["periodType"]]["score"] if item["inLevel"] == "Y" else 0 , items)))
+    items = list(filter(lambda item: item["type"] == 2, items))
+    scoreDesc = ItemScoreStandard.scoreLevelDesc
+    total_score = sum(list(map(lambda item: scoreDesc[item["periodType"]]["score"] , items)))
     score = total_score / len(items)
     return list(filter(lambda s: s["score"] == score , scoreDesc.values()))[0]["desc"]
 

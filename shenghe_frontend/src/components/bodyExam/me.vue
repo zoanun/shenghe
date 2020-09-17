@@ -186,22 +186,23 @@
         </el-col>
       </el-row>
     </div>
-    <BodyReport :report-data="reportData"
-                :report-visible.sync="reportVisible"
-                :name="form.name"
-                :sex="listToTextFormatter(combox.sex, form.sex)"
-                :age="form.age"
+    <Report :id="form.id"
+            :report-visible.sync="reportVisible"
+            :name="form.name"
+            :sex="listToTextFormatter(combox.sex, form.sex)"
+            :age="form.age"
+            :member-id="form.memberId"
     >
-    </BodyReport>
+    </Report>
   </div>
 </template>
 
 <script>
   import request from '@/utils/request.js';
-  import BodyReport from '@/components/bodyExam/BodyReport';
+  import Report from '@/components/bodyExam/Report';
   export default {
     name: 'Nme',
-    components: { BodyReport },
+    components: { Report },
     data () {
       return {
         query: {
@@ -350,17 +351,7 @@
           method: 'post',
           data: this.form
         }).then(() => {
-
-          url = '/bc/report';
-          request({
-            url: this.contextPath + url,
-            method: 'post',
-            data: this.form
-          }).then(data => {
-            this.reportData = data;
-            this.reportVisible = true;
-          });
-
+          this.reportVisible = true;
         }).catch(e => {
           this.$message.error('发生错误，请联系管理员.');
         });

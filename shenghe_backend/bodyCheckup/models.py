@@ -46,7 +46,7 @@ class ItemScoreStandard(BaseModel):
         ('GOOD', '良好'),
         ('EXCELLENT', '优秀'),
     )
-    scoreDesc = {
+    scoreLevelDesc = {
         "FAILED" : {"score": 1, "desc": "体能综合表现需加强，多加强有氧运动，提升核心（腰部，腹部，臀部）力量，加强柔韧性练习，多做放化式运动。"},
         "PASS": {"score": 2, "desc": "体能综合表现一般，建议加强协调性练习，强化爆发力及灵敏度练习。"},
         "GOOD": {"score": 3, "desc": "整体表现良好，建议多做专项练习，强化小肌肉群力量，多做手脚协同配合练习。"},
