@@ -223,7 +223,6 @@
         },
         form: { title: '新增信息', items: [] },
         tableData: [],
-        reportData: [],
         reportVisible: false,
         viewReport: false,
         rules: {

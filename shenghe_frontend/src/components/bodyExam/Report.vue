@@ -40,7 +40,7 @@
 </template>
 
 <script>
-  // import request from '@/utils/request.js';
+  import request from '@/utils/request.js';
   export default {
     name: 'BodyReport',
     components: {},
@@ -74,6 +74,7 @@
       return {
         dialogVisible: false,
         reportData: {},
+        contextPath: localStorage.getItem('backendContextPath'),
         printProp: {
           id: 'printMe',
           popTitle: '盛和国际跆拳道'
@@ -86,18 +87,18 @@
       }
     },
     methods: {
-      onOpened () {/*
+      onOpened () {
         request({
           url: this.contextPath + '/bc/report',
-          method: 'get',
-          params: {
+          method: 'post',
+          data: {
             id: this.id,
             memberId: this.memberId
           }
         }).then(result => {
           console.log(result);
           this.reportData = result;
-        });*/
+        });
       },
       onClose () {
         this.$emit('update:reportVisible', false);

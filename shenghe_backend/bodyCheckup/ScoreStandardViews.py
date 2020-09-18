@@ -158,13 +158,17 @@ def report(request):
             "latest_test": []
         }
         if "memberId" in data:
-            members = list(Member.objects.filter(memberId=data["memberId"]).filter(id_lte=data["id"]).order_by("-id")[:2])
-            result["current_test"] = fetchData(members[0])
-            result["latest_test"] = fetchData(members[1])
+            members = list(Member.objects.filter(memberId=data["memberId"]).filter(id__lte=data["id"]).order_by("-id")[:2])
+            if len(members) > 0:
+                result["current_test"] = fetchData(members[0])
+            if len(members) > 1:
+                result["latest_test"] = fetchData(members[1])
         else:
             nonmember = NonMember.objects.get(pk=data["id"])
-            result["current_test"] = fetchData(nonmember)
-        result["current_test_desc"] = getAvgScoreDesc(result["current_test"])
+            if nonmember:
+                result["current_test"] = fetchData(nonmember)
+        if result["current_test"]:
+            result["current_test_desc"] = getAvgScoreDesc(result["current_test"])
 
         return HttpResponse(json.dumps(result, ensure_ascii=False))
     else:
