@@ -14,8 +14,8 @@ class ItemMaster(BaseModel):
         (2, '体能类')
     )
     type = models.IntegerField('项目类型', choices=typeChoices)
-
     name = models.CharField(verbose_name='项目名', max_length=100)
+    unit = models.CharField(verbose_name='测量单位', max_length=10)
     nonmemberUseYn = models.CharField(verbose_name='非会员是否使用', choices=(('Y', '使用'), ('N', '不使用')), max_length=1)
     memberUseYn = models.CharField('会员是否使用', choices=(('Y', '使用'), ('N', '不使用')), max_length=1)
     useYn = models.CharField('该项目是否使用', choices=(('Y', '使用'), ('N', '不使用')), max_length=1)

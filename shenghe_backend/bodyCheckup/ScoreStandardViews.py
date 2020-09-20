@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from .models import *
-import json
+import json, datetime
 
 
 def findMaster(request):
@@ -82,7 +82,9 @@ def fetchData(data):
             bid.value as standardValue,
             biss.periodType,
             biss.lowScore,
-            case when %s > biss.lowScore and %s <= biss.highScore then
+            case when %s >= biss.lowScore and %s <= biss.highScore then
+                'Y'
+            when %s <= biss.lowScore and %s >= biss.highScore then
                 'Y'
             else
                 'N'
@@ -90,7 +92,8 @@ def fetchData(data):
             biss.highScore,
             biss.scoreDesc,
             biss.color,
-            bim.type
+            bim.type,
+            bim.unit
         from
             bodyCheckup_itemmaster bim,
             bodyCheckup_itemdetail bid,
@@ -117,13 +120,15 @@ def fetchData(data):
                 "itemId": itemId,
                 "age": age,
                 "sex": sex,
-                "level": []
+                "level": [],
+                "testDate": datetime.datetime.strftime(item.testDate, "%Y-%m-%d")
             }
-            for row in ItemMaster.objects.raw(sql, [score, score, age, sex, itemId]):
+            for row in ItemMaster.objects.raw(sql, [score, score, score, score, age, sex, itemId]):
                 resultItem["name"] = row.item_name
                 resultItem["standardValue"] = row.standardValue
                 if row.inLevel == "Y":
                     resultItem["periodType"] = row.periodType
+                    resultItem["periodName"] = typeMap[row.periodType]
 
                 resultItem["level"].append({
                     "inLevel": row.inLevel,
@@ -135,16 +140,39 @@ def fetchData(data):
                     "color": row.color
                 })
                 resultItem["type"] = row.type
+                resultItem["unit"] = row.unit
+
             lowestLevel = list(filter(lambda level: level["periodType"] == ItemScoreStandard.typeChoices[0][0], resultItem["level"]))[0]
             highestLevel = list(filter(lambda level: level["periodType"] == ItemScoreStandard.typeChoices[-1][0], resultItem["level"]))[0]
-            if score < lowestLevel["lowScore"]:
-                lowestLevel["inLevel"] = "Y"
-                resultItem["periodType"] = ItemScoreStandard.typeChoices[0][0]
-                resultItem["displayScore"] = lowestLevel["lowScore"]
-            if score > highestLevel["highScore"]:
-                highestLevel["inLevel"] = "Y"
-                resultItem["periodType"] = ItemScoreStandard.typeChoices[-1][0]
-                resultItem["displayScore"] = highestLevel["highScore"]
+
+            if lowestLevel["lowScore"] < lowestLevel["highScore"]:
+                lowestScore = min(lowestLevel["lowScore"], lowestLevel["highScore"])
+                highestScore = max(highestLevel["lowScore"], highestLevel["highScore"])
+                if score < lowestScore:
+                    lowestLevel["inLevel"] = "Y"
+                    resultItem["periodType"] = ItemScoreStandard.typeChoices[0][0]
+                    resultItem["periodName"] = typeMap[ItemScoreStandard.typeChoices[0][0]]
+                    resultItem["displayScore"] = lowestScore
+                if score > highestScore:
+                    highestLevel["inLevel"] = "Y"
+                    resultItem["periodType"] = ItemScoreStandard.typeChoices[-1][0]
+                    resultItem["periodName"] = typeMap[ItemScoreStandard.typeChoices[-1][0]]
+                    resultItem["displayScore"] = highestScore
+            else:
+                # 50米折返跑，数值低反而得分高
+                lowestScore = max(lowestLevel["lowScore"], lowestLevel["highScore"])
+                highestScore = min(highestLevel["lowScore"], highestLevel["highScore"])
+                if score > lowestScore:
+                    lowestLevel["inLevel"] = "Y"
+                    resultItem["periodType"] = ItemScoreStandard.typeChoices[0][0]
+                    resultItem["periodName"] = typeMap[ItemScoreStandard.typeChoices[0][0]]
+                    resultItem["displayScore"] = lowestScore
+                if score < highestScore:
+                    highestLevel["inLevel"] = "Y"
+                    resultItem["periodType"] = ItemScoreStandard.typeChoices[-1][0]
+                    resultItem["periodName"] = typeMap[ItemScoreStandard.typeChoices[-1][0]]
+                    resultItem["displayScore"] = highestScore
+
             result.append(resultItem)
     return result
 
@@ -153,22 +181,27 @@ def report(request):
     if request.method == "POST":
         data = json.loads(request.body)
         result = {
-            "current_test": [],
-            "current_test_desc": "",
-            "latest_test": []
+            "currentTest": [],
+            "currentTestDate": "",
+            "currentTestDesc": "",
+            "latestTest": [],
+            "latestTestDate": ""
         }
-        if "memberId" in data:
+        if "memberId" in data and data["memberId"]:
             members = list(Member.objects.filter(memberId=data["memberId"]).filter(id__lte=data["id"]).order_by("-id")[:2])
             if len(members) > 0:
-                result["current_test"] = fetchData(members[0])
+                result["currentTest"] = fetchData(members[0])
+                result["currentTestDate"] = result["currentTest"][0]["testDate"] if result["currentTest"] else ''
             if len(members) > 1:
-                result["latest_test"] = fetchData(members[1])
+                result["latestTest"] = fetchData(members[1])
+                result["latestTestDate"] = result["latestTest"][0]["testDate"] if result["latestTest"] else ''
         else:
             nonmember = NonMember.objects.get(pk=data["id"])
             if nonmember:
-                result["current_test"] = fetchData(nonmember)
-        if result["current_test"]:
-            result["current_test_desc"] = getAvgScoreDesc(result["current_test"])
+                result["currentTest"] = fetchData(nonmember)
+                result["currentTestDate"] = result["currentTest"][0]["testDate"] if result["currentTest"] else ''
+        if result["currentTest"]:
+            result["currentTestDesc"] = getAvgScoreDesc(result["currentTest"])
 
         return HttpResponse(json.dumps(result, ensure_ascii=False))
     else:
@@ -178,7 +211,11 @@ def report(request):
 def getAvgScoreDesc(items):
     items = list(filter(lambda item: item["type"] == 2, items))
     scoreDesc = ItemScoreStandard.scoreLevelDesc
-    total_score = sum(list(map(lambda item: scoreDesc[item["periodType"]]["score"] , items)))
+    for item in items:
+        item["periodScore"] = scoreDesc[item["periodType"]]["score"]
+
+    total_score = sum(list(map(lambda item: item["periodScore"] , items)))
     score = total_score / len(items)
-    return list(filter(lambda s: s["score"] == score , scoreDesc.values()))[0]["desc"]
+    final_score = 1 if 1 <= score < 1.5 else 2 if 1.5 <= score < 2.5 else 3 if 2.5 <= score < 3.5 else 4 if 3.5 <= score else 0
+    return list(filter(lambda s: s["score"] == final_score , scoreDesc.values()))[0]["desc"]
 
