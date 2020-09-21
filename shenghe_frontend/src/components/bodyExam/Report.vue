@@ -242,7 +242,7 @@
 #health {
     position: relative;
     top: 390px;
-    left: 110px;
+    left: 100px;
 }
 #health p {
     font-weight: bold;
