@@ -9,7 +9,7 @@ service.interceptors.request.use(
         return config;
     },
     error => {
-        console.log(error);
+        // console.log(error);
         return Promise.reject();
     }
 );
@@ -19,12 +19,12 @@ service.interceptors.response.use(
         if (response.status === 200) {
             return response.data;
         } else {
-            console.log('发生' + response.status + '错误.');
+            // console.log('发生' + response.status + '错误.');
             Promise.reject();
         }
     },
     error => {
-        console.log(error);
+        // console.log(error);
         return Promise.reject();
     }
 );

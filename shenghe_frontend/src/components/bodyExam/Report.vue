@@ -152,7 +152,6 @@
             memberId: this.memberId
           }
         }).then(result => {
-          console.log(result);
           this.reportData = result;
           this.height = result.currentTest.find(test=>test.name === '身高').score + ' cm';
           this.weight = result.currentTest.find(test=>test.name === '体重').score + ' kg';
